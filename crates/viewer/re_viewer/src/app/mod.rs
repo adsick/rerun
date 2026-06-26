@@ -540,6 +540,15 @@ impl App {
         self.state.active_recording_id()
     }
 
+    /// The active blueprint [`StoreId`] for the active recording, if any.
+    pub fn active_blueprint_id(&self) -> Option<&StoreId> {
+        let store_hub = self.store_hub.as_ref()?;
+        let recording_id = self.active_recording_id()?;
+        store_hub
+            .active_blueprint_for_app(recording_id.application_id())
+            .map(EntityDb::store_id)
+    }
+
     /// Open a content URL in the viewer.
     pub fn open_url_or_file(&self, url: &str) {
         match ViewerOpenUrl::parse_with_options(
@@ -904,6 +913,12 @@ impl App {
         let store_hub = self.store_hub.as_ref()?;
         let recording_id = self.active_recording_id()?;
         store_hub.entity_db(recording_id)
+    }
+
+    pub fn active_blueprint_db(&self) -> Option<&EntityDb> {
+        let store_hub = self.store_hub.as_ref()?;
+        let recording_id = self.active_recording_id()?;
+        store_hub.active_blueprint_for_app(recording_id.application_id())
     }
 
     /// Returns a [`re_chunk_store::LatestAtQuery`] for the active recording's current timeline
